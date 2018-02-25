@@ -4,6 +4,9 @@ const path       = require('path'); //provides utilities for working with file a
 const bodyParser = require('body-parser');
 const cors       = require('cors'); //for cross domain functionality or authorisation
 
+//DB Config
+require('./config/db');
+
 const app = express();
 
 const poll = require('./routes/poll');

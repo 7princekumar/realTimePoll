@@ -1,5 +1,8 @@
 const express = require('express');
 const router  = express.Router();
+const mongoose = require('mongoose');
+
+const Vote = require('../models/Vote');
 
 const Pusher  = require('pusher');
 
@@ -18,15 +21,24 @@ if(process.env.APP_ID && process.env.KEY && process.env.SECRET){
 }
 
 router.get('/', function(req, res){
-    res.send('POLL');
+    Vote.find().then(votes => res.json({success: true, votes: votes}));
 });
 
 router.post('/', function(req, res){
-    pusher.trigger('os-poll', 'os-vote', {
-    //   "message": "hello world"
-        points: 1,
-        os: req.body.os
+    const newVote = {
+        os: req.body.os,
+        points: 1
+    }
+    
+    new Vote(newVote).save().then(vote => {
+         pusher.trigger('os-poll', 'os-vote', {
+            //"message": "hello world"
+            points: parseInt(vote.points),
+            os: vote.os
+        });
     });
+    
+   
     
     return res.json({
         success: true,
